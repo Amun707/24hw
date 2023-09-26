@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 
-//Задача 1.
+
 template <typename T>
 void show_arr(T arr[], int size) {
 	std::cout << "{";
@@ -10,23 +10,40 @@ void show_arr(T arr[], int size) {
 		std::cout << arr[i] << ", ";
 	std::cout << "\b\b}\n";
 }
-
-void fill_arr(int arr[], int size, int min, int max) {
+template <typename T>
+void fill_arr(T arr[], int size, int min, int max) {
 	srand(time(NULL));
 	for (int i = 0; i < size; i++)
 		arr[i] = rand() % (max - min) + min;
 }
 
+
 //Задача 2.
-
 template <typename T>
-void resize_arr(T arr1[], const int length) {
-	std::cout << "{ ";
-	for (int i = 0; i < length; i++)
-		std::cout << arr[i] << ", ";
-	std::cout << "\b\b }" << std::endl;
-}
+void resize_arr(T*& arr, const int length, int newlen) {
+	if (length == newlen) // завершение функции, если длина не должна измениться
+		return;
 
+	if (newlen <= 0) { // создание нейтрального указателя и завершение функции, если длина <= 0
+		delete[] arr;
+		arr = nullptr;
+		return; 
+	}
+
+	// Шаг 1. Выделение памяти под новый временный массив нужной длины
+	T* tmp = new T[newlen]{}; // массив нулей
+
+	// Шаг 2. Копирование элементов старого массива в новый
+	int minlen = length < newlen ? length : newlen;
+	for (int i = 0; i < minlen; i++)
+		tmp[i] = arr[i];
+
+	// Шаг 3. Удаление элементов старого массива
+	delete[] arr;
+
+	// Шаг 4. Перенаправление указателя на новый массив
+	arr = tmp;
+}
 
 
 int main() {
@@ -55,33 +72,26 @@ int main() {
 	show_arr(C, n + m);
 	delete[] A;
 	delete[] B;
+	std::cout << std::endl;
+
 
 	//Задача 2.
 	std::cout << "Задача 2.\nВведите текущую длину массива -> ";
 	std::cin >> n;
 	int* K = new int[n];
+	std::cout << "Изначальный массив:\n";
 	fill_arr(K, n, 27, 48);
 	show_arr(K, n);
 
 	std::cout << "Введите новую длину массива -> ";
-	std::cin >> m;
-	int* N = new int[m];
-	fill_arr(N, m, 44, 77);
-	show_arr(N, m);
+	int newn;
+	std::cin >> newn;
 
-	const int size1 = 5;
-	int arr[size1];
-	const int size = m;
-	int arr1[size1];
+	resize_arr(K, n, newn);
 
 	std::cout << "Итоговый массив:\n";
-	std::swap(*arr1, *arr);
-	resize_arr(arr1, size1);
-
-
-
-
-
+	show_arr(K, newn);
 
 
 	return 0;
+}
